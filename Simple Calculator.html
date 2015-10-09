@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="author" content="Douglas Perkins">
+<meta name="description" content="A simple JavaScript calculator.">
+<title>Simple Calculator</title>
+<!--
+Copyright 2015 Douglas Perkins.
+https://dperkins.org
+https://microca.st/dper
+https://twitter.com/dpp0
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<script>
+/* The current binary operation. */
+var storedOperation = "";
+var storedArgument = "0";
+var startNewNumber = false;
+
+function cropDecimal(n) {
+	/* Keep this many digits after the decimal point. */
+	var precision = 10;
+	return parseFloat(n.toFixed(precision));
+}
+
+/* Clears stored data for binary operations. */
+function clearBinaryData () {
+	storedOperation = "";
+	storedArgument = "0";
+	startNewNumber = false;
+}
+
+/* Adds a digit to the end of the current number. */
+function digit(d) {
+	display = document.getElementById("display");
+
+	/* Only show one zero if the number is zero. */
+	if (display.innerHTML == "0" || startNewNumber) {
+		display.innerHTML = d;
+		startNewNumber = false;
+	} else {
+		display.innerHTML += d;
+	}
+}
+
+/* Adds a decimal point to the current number. */
+function point () {
+	display = document.getElementById("display");
+
+	/* Only show one decimal point. */
+	if (display.innerHTML.indexOf('.') === -1) {
+		display.innerHTML += '.';
+	}
+}
+
+/* Resets the calculator. */
+function reset() {
+	display = document.getElementById("display");
+	display.innerHTML = "0";
+	clearBinaryData();
+}
+
+/* Calculates the square root. */
+function root() {
+	display = document.getElementById("display");
+	answer = Math.sqrt(display.innerHTML);
+	answer = cropDecimal(answer);
+	display.innerHTML = answer;
+	clearBinaryData();
+}
+
+/* Puts the binary operator on the stack. */
+function binaryOperation(operation) {
+	/* If there is an existing binary operation, replace it. */
+	storedOperation = operation;
+	storedArgument = document.getElementById("display").innerHTML;
+	startNewNumber = true;
+}
+
+/* Evaluates the current binary operator. */
+function equals() {
+	/* If an operator is followed by equals, don't calculate it. */
+	if (startNewNumber) {
+		clearBinaryData();
+		return;
+	}
+
+	display = document.getElementById("display");
+	var x = Number(storedArgument);
+	var y = Number(display.innerHTML);
+	var answer;
+
+	switch(storedOperation) {
+		case "plus":
+			answer = x + y;
+			break;
+		case "minus":
+			answer = x - y;
+			break;
+		case "times":
+			answer = x * y;
+			break;
+		case "divide":
+			answer = x / y;
+			break;
+		default:
+			clearBinaryData();
+			return;
+	}
+
+	answer = cropDecimal(answer);
+	display.innerHTML = answer;
+	clearBinaryData();
+}
+</script>
+<title>Simple Calculator</title>
+<style>
+body {
+	text-align: center;
+	font-family: Courier, monospace;
+}
+
+table {
+	border: 5px groove black;	
+	text-align: center;
+	font-size: large;
+	margin-left: auto;
+	margin-right: auto;
+	font-weight: bold;
+	background: linear-gradient(to bottom right, #004, #008);
+	padding: 8px;
+}
+
+td {
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+td.title {
+	color: #888888;
+	font-family: serif;
+	font-size: x-large;
+	text-transform: uppercase;
+}
+
+td.blank_column {
+	border: 0px ;
+	width: 30px;
+}
+
+tr.blank_row {
+	border: 0px;
+	height: 20px;
+}
+
+td.blank_cell {
+	border: 0px;
+}
+
+button {
+	width: 40px;
+	height: 40px;
+	font-size: large;
+	font-weight: bold;
+	border-radius: 8px;
+}
+
+td.digit button {
+	background: linear-gradient(#555, #333);
+	color: white;
+}
+
+td.operator button {
+	background: linear-gradient(#333, #111);
+	color: white;
+}
+
+td.clear button {
+	background: linear-gradient(#A00, #800);
+	color: white;
+}
+
+#equals {
+	background: linear-gradient(#060, #040);
+	color: white;
+}
+
+#display {
+	background: linear-gradient(#AAA, white, #AAA);
+	font-size: x-large;
+	text-align: right;
+	border-radius: 4px;
+}
+</style>
+</head>
+
+<body style="text-align: center;">
+<table style="margin-left: auto; margin-right: auto;">
+
+<tr><td colspan="6" class="title">Simple Calculator</td></tr>
+
+<tr class="blank_row" />
+
+<tr><td colspan="6" id="display">0</td></tr>
+
+<tr class="blank_row" />
+
+<tr>
+<td class="digit"><button id="one" onclick="digit(1)">1</button></td>
+<td class="digit"><button id="two" onclick="digit(2)">2</button></td>
+<td class="digit"><button id="three" onclick="digit(3)">3</button></td>
+<td rowspan="4" class="blank_column" />
+<td class="blank_cell" />
+<td class="clear"><button id="clear" onclick="reset()">C</button></td>
+</tr>
+
+<tr>
+<td class="digit"><button id="four" onclick="digit(4)">4</button></td>
+<td class="digit"><button id="five" onclick="digit(5)">5</button></td>
+<td class="digit"><button id="six" onclick="digit(6)">6</button></td>
+<td class="operator"><button id="plus" onclick="binaryOperation('plus')">+</button></td>
+<td class="operator"><button id="minus" onclick="binaryOperation('minus')">&minus;</button></td>
+</tr>
+
+<tr>
+<td class="digit"><button id="seven" onclick="digit(7)">7</button></td>
+<td class="digit"><button id="eight" onclick="digit(8)">8</button></td>
+<td class="digit"><button id="nine" onclick="digit(9)">9</button></td>
+<td class="operator"><button id="times" onclick="binaryOperation('times')">&times;</button></td>
+<td class="operator"><button id="divide" onclick="binaryOperation('divide')">&divide;</button></td>
+</tr>
+
+<tr>
+<td class="digit"><button id="zero" onclick="digit(0)">0</button></td>
+<td class="blank_cell" />
+<td class="digit"><button id="point" onclick="point()">.</button></td>
+<td class="operator"><button id="root" onclick="root()">&radic;</button></td>
+<td class="operator"><button id="equals" onclick="equals()">=</button></td>
+</tr>
+
+</table>
+</body>
+</html>
