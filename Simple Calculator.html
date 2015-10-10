@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 var storedOperation = "";
 var storedArgument = "0";
 var startNewNumber = false;
+var errorState = false;
 
 function cropDecimal(n) {
 	/* Keep this many digits after the decimal point. */
@@ -43,12 +44,24 @@ function clearBinaryData () {
 	startNewNumber = false;
 }
 
+/* Check for a "not a number" error. */
+function checkNaN() {
+	if (document.getElementById("display").innerHTML == "NaN") {
+		errorState = true;
+	}
+}
+
 /* Adds a digit to the end of the current number. */
 function digit(d) {
-	display = document.getElementById("display");
+	if (errorState) {
+		return;
+	}
+
+	var display = document.getElementById("display");
+	var current = display.innerHTML;
 
 	/* Only show one zero if the number is zero. */
-	if (display.innerHTML == "0" || startNewNumber) {
+	if (current == "0" || current == "NaN" || startNewNumber) {
 		display.innerHTML = d;
 		startNewNumber = false;
 	} else {
@@ -58,7 +71,11 @@ function digit(d) {
 
 /* Adds a decimal point to the current number. */
 function point () {
-	display = document.getElementById("display");
+	if (errorState) {
+		return;
+	}
+
+	var display = document.getElementById("display");
 
 	/* Only show one decimal point. */
 	if (display.innerHTML.indexOf('.') === -1) {
@@ -71,34 +88,46 @@ function reset() {
 	display = document.getElementById("display");
 	display.innerHTML = "0";
 	clearBinaryData();
+	errorState = false;
 }
 
 /* Calculates the square root. */
 function root() {
-	display = document.getElementById("display");
-	answer = Math.sqrt(display.innerHTML);
+	if (errorState) {
+		return;
+	}
+
+	var display = document.getElementById("display");
+	var answer = Math.sqrt(display.innerHTML);
 	answer = cropDecimal(answer);
 	display.innerHTML = answer;
 	clearBinaryData();
+	checkNaN();
 }
 
 /* Puts the binary operator on the stack. */
 function binaryOperation(operation) {
+	var display = document.getElementById("display");
+
 	/* If there is an existing binary operation, replace it. */
 	storedOperation = operation;
-	storedArgument = document.getElementById("display").innerHTML;
+	storedArgument = display.innerHTML;
 	startNewNumber = true;
 }
 
 /* Evaluates the current binary operator. */
 function equals() {
+	if (errorState) {
+		return;
+	}
+
 	/* If an operator is followed by equals, don't calculate it. */
 	if (startNewNumber) {
 		clearBinaryData();
 		return;
 	}
 
-	display = document.getElementById("display");
+	var display = document.getElementById("display");
 	var x = Number(storedArgument);
 	var y = Number(display.innerHTML);
 	var answer;
@@ -124,6 +153,7 @@ function equals() {
 	answer = cropDecimal(answer);
 	display.innerHTML = answer;
 	clearBinaryData();
+	checkNaN();
 }
 </script>
 <title>Simple Calculator</title>
