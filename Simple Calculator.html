@@ -53,15 +53,13 @@ function checkNaN() {
 
 /* Adds a digit to the end of the current number. */
 function digit(d) {
-	if (errorState) {
-		return;
-	}
+	if (errorState) { return; }
 
 	var display = document.getElementById("display");
 	var current = display.innerHTML;
 
 	/* Only show one zero if the number is zero. */
-	if (current == "0" || current == "NaN" || startNewNumber) {
+	if (current == "0" || startNewNumber) {
 		display.innerHTML = d;
 		startNewNumber = false;
 	} else {
@@ -71,14 +69,15 @@ function digit(d) {
 
 /* Adds a decimal point to the current number. */
 function point () {
-	if (errorState) {
-		return;
-	}
+	if (errorState) { return; }
 
 	var display = document.getElementById("display");
 
-	/* Only show one decimal point. */
-	if (display.innerHTML.indexOf('.') === -1) {
+	if (startNewNumber) {
+		display.innerHTML = "0.";
+		startNewNumber = false;
+	} else if (display.innerHTML.indexOf('.') === -1) {
+		/* Only show one decimal point. */
 		display.innerHTML += '.';
 	}
 }
@@ -93,9 +92,7 @@ function reset() {
 
 /* Calculates the square root. */
 function root() {
-	if (errorState) {
-		return;
-	}
+	if (errorState) { return; }
 
 	var display = document.getElementById("display");
 	var answer = Math.sqrt(display.innerHTML);
@@ -117,9 +114,7 @@ function binaryOperation(operation) {
 
 /* Evaluates the current binary operator. */
 function equals() {
-	if (errorState) {
-		return;
-	}
+	if (errorState) { return; }
 
 	/* If an operator is followed by equals, don't calculate it. */
 	if (startNewNumber) {
