@@ -12,9 +12,9 @@ This is a simple JavaScript calculator.  There are several goals.
 
 Contact the author if you find any bugs, make any improvements, or otherwise feel like it.
 
-* [https://dperkins.org]
-* [https://microca.st/dper]
-* [https://twitter.com/dpp0]
+* https://dperkins.org
+* https://microca.st/dper
+* https://twitter.com/dpp0
 
 # Copyright
 
